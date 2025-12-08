@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ consola.nombre }} | Hardware{% endblock %}
+
+{% block content %}
+
+<!-- ENCABEZADO DE PRODUCTO -->
+<div class="bg-light py-5">
+    <div class="container">
+        
+        <!-- Migas de pan -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'inicio' %}" class="text-decoration-none text-muted small">INICIO</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'lista_consolas' %}" class="text-decoration-none text-muted small">DISPOSITIVOS</a></li>
+                <li class="breadcrumb-item active small fw-bold" aria-current="page">{{ consola.nombre|upper }}</li>
+            </ol>
+        </nav>
+
+        <div class="row align-items-center gx-5">
+            
+            <!-- COLUMNA IZQUIERDA: IMAGEN DEL PRODUCTO -->
+            <div class="col-md-6 mb-4 mb-md-0 text-center">
+                <div class="p-4 bg-white shadow-sm rounded-3" style="min-height: 400px; display: flex; align-items: center; justify-content: center;">
+                    {% if consola.imagen %}
+                        <img src="{{ consola.imagen.url }}" class="img-fluid" alt="{{ consola.nombre }}" style="max-height: 350px;">
+                    {% else %}
+                        <div class="text-muted">Sin imagen de producto</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: INFORMACIÓN Y COMPRA -->
+            <div class="col-md-6">
+                <h6 class="text-xbox fw-bold text-uppercase mb-2">Hardware Xbox</h6>
+                <h1 class="display-4 fw-bold mb-3">{{ consola.nombre }}</h1>
+                
+                <!-- Precio -->
+                <div class="mb-4 border-bottom pb-4">
+                    <h2 class="display-6 fw-bold text-dark">MXN${{ consola.precio }}</h2>
+                    <p class="text-muted small">Incluye impuestos. Envío gratuito.</p>
+                </div>
+
+                <!-- Disponibilidad -->
+                <div class="mb-4">
+                    {% if consola.stock > 0 %}
+                        <div class="d-flex align-items-center text-success">
+                            <i class="bi bi-check-circle-fill fs-5 me-2"></i>
+                            <span class="fw-bold">Disponible en inventario ({{ consola.stock }})</span>
+                        </div>
+                    {% else %}
+                        <div class="d-flex align-items-center text-danger">
+                            <i class="bi bi-x-circle-fill fs-5 me-2"></i>
+                            <span class="fw-bold">Agotado temporalmente</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-grid gap-2 d-md-block">
+                    {% if not user.is_staff %}
+                        {% if consola.stock > 0 %}
+                            <!-- Nota: Tipo 'consola' -->
+                            <a href="{% url 'agregar_carrito' 'consola' consola.ID_consola %}" class="btn btn-xbox-primary btn-lg px-5 shadow-sm">
+                                COMPRAR
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary btn-lg px-5" disabled>NO DISPONIBLE</button>
+                        {% endif %}
+                {% endif %}    
+                </div>
+                
+                <!-- Admin Tools -->
+                {% if user.is_staff %}
+                <div class="mt-4 pt-3 border-top">
+                    <small class="text-muted fw-bold d-block mb-2">ADMINISTRACIÓN</small>
+                    <a href="{% url 'editar_consola' consola.ID_consola %}" class="btn btn-sm btn-outline-dark me-2">Editar</a>
+                    <a href="{% url 'eliminar_consola' consola.ID_consola %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SECCIÓN DE ESPECIFICACIONES TÉCNICAS (Iconos) -->
+<div class="container py-5 my-4">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Especificaciones Técnicas</h2>
+        <div style="height: 4px; width: 60px; background-color: #107C10; margin: 15px auto;"></div>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-4 g-4 text-center">
+        <!-- Resolución -->
+        <div class="col">
+            <div class="p-4 h-100 border rounded-3 bg-white">
+                <i class="bi bi-display display-4 text-secondary mb-3"></i>
+                <h5 class="fw-bold">Resolución</h5>
+                <p class="text-muted">{{ consola.resolucion }}</p>
+            </div>
+        </div>
+        <!-- Almacenamiento -->
+        <div class="col">
+            <div class="p-4 h-100 border rounded-3 bg-white">
+                <i class="bi bi-hdd-network display-4 text-secondary mb-3"></i>
+                <h5 class="fw-bold">Almacenamiento</h5>
+                <p class="text-muted">{{ consola.almacenar_espacio }} <br><small class="text-uppercase">{{ consola.almacenar_tipo }}</small></p>
+            </div>
+        </div>
+        <!-- Color -->
+        <div class="col">
+            <div class="p-4 h-100 border rounded-3 bg-white">
+                <i class="bi bi-palette display-4 text-secondary mb-3"></i>
+                <h5 class="fw-bold">Color</h5>
+                <p class="text-muted">{{ consola.color }}</p>
+            </div>
+        </div>
+        <!-- Fecha -->
+        <div class="col">
+            <div class="p-4 h-100 border rounded-3 bg-white">
+                <i class="bi bi-calendar-event display-4 text-secondary mb-3"></i>
+                <h5 class="fw-bold">Lanzamiento</h5>
+                <p class="text-muted">{{ consola.fecha_lanzamiento }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

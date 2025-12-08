@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar sesión en tu cuenta{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh; background-color: #f2f2f2;">
+    
+    <div class="bg-white p-5 shadow-sm" style="max-width: 440px; width: 100%; border: 1px solid #e1e1e1;">
+        
+        <!-- Logo Microsoft -->
+        <div class="mb-4">
+            <img src="https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31" alt="Microsoft" height="24">
+        </div>
+
+        <h3 class="fw-bold mb-4">Iniciar sesión</h3>
+        
+        <!-- Mensajes de Error (si la contraseña está mal) -->
+        {% if form.errors %}
+            <div class="alert alert-danger small border-0 mb-3">
+                Usuario o contraseña incorrectos.
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <input type="text" name="username" class="form-control form-control-lg rounded-0 border-secondary" placeholder="Correo electrónico, teléfono o usuario" required style="font-size: 0.95rem;">
+            </div>
+
+            <div class="mb-3">
+                <input type="password" name="password" class="form-control form-control-lg rounded-0 border-secondary" placeholder="Contraseña" required style="font-size: 0.95rem;">
+            </div>
+
+            <div class="d-flex justify-content-end align-items-center">
+                <button type="submit" class="btn btn-xbox-primary px-4 py-2 fw-bold shadow-sm">
+                    Siguiente
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Opciones de registro flotantes (Estilo Microsoft) -->
+    <div class="position-absolute bg-white p-3 border shadow-sm" style="top: 20px; right: 20px; display: none;">
+        <!-- Opcional -->
+    </div>
+
+</div>
+
+<!-- Sección inferior fuera de la caja blanca -->
+<div class="text-center py-3" style="background-color: #f2f2f2;">
+    <p class="small text-muted">¿No tiene una cuenta? <a href="{% url 'registro' %}" class="text-primary fw-bold text-decoration-none">Cree una</a>.</p>
+</div>
+{% endblock %}
