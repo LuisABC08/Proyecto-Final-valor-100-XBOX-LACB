@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Accesorios Xbox{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="text-center py-5">
+    <h1 class="fw-bold display-4">ACCESORIOS <span class="text-xbox">XBOX</span></h1>
+    <div style="height: 5px; width: 50px; background-color: #9bf00b; margin: 10px auto;"></div>
+    <p class="text-muted">Controles, audífonos y expansión de almacenamiento.</p>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        
+        <!-- SIDEBAR FILTROS -->
+        <div class="col-md-3 d-none d-md-block">
+            <form method="GET" action="{% url 'lista_accesorios' %}">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold m-0">Filtros</h5>
+                    {% if request.GET %}
+                        <a href="{% url 'lista_accesorios' %}" class="text-success small text-decoration-none">Limpiar</a>
+                    {% endif %}
+                </div>
+
+                <!-- Buscador -->
+                <div class="mb-3">
+                    <input type="text" name="q" class="form-control" placeholder="Buscar accesorio..." value="{{ request.GET.q }}">
+                </div>
+
+                <div class="accordion accordion-flush" id="accFilters">
+                    
+                    <!-- Categoría -->
+                    <div class="accordion-item bg-transparent">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button bg-light fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCat">
+                                Categoría
+                            </button>
+                        </h2>
+                        <div id="collapseCat" class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                {% for cat in lista_categorias %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="categoria" value="{{ cat }}" id="cat_{{ forloop.counter }}"
+                                    {% if cat in filtros_activos.categoria %}checked{% endif %}>
+                                    <label class="form-check-label" for="cat_{{ forloop.counter }}">{{ cat }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compatibilidad -->
+                    <div class="accordion-item bg-transparent">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed bg-light fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseComp">
+                                Compatibilidad
+                            </button>
+                        </h2>
+                        <div id="collapseComp" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                {% for comp in lista_compat %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="compatibilidad" value="{{ comp }}" id="comp_{{ forloop.counter }}"
+                                    {% if comp in filtros_activos.compatibilidad %}checked{% endif %}>
+                                    <label class="form-check-label" for="comp_{{ forloop.counter }}">{{ comp }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-3">
+                    <button type="submit" class="btn btn-dark btn-sm">Aplicar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- GRID PRODUCTOS -->
+        <div class="col-md-9">
+            
+            {% if user.is_staff %}
+                <div class="mb-3 text-end">
+                    <a href="{% url 'crear_accesorio' %}" class="btn btn-dark btn-sm"><i class="bi bi-plus"></i> Admin: Agregar Accesorio</a>
+                </div>
+            {% endif %}
+
+            <div class="row row-cols-1 row-cols-md-3 g-5">
+                {% for acc in accesorios %}
+                <div class="col">
+                    <div class="card card-clean h-100">
+                        <a href="{% url 'detalle_accesorio' acc.ID_accesorio %}">
+                            <div style="height: 250px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff;">
+                                {% if acc.imagen %}
+                                    <img src="{{ acc.imagen.url }}" alt="{{ acc.nombre }}" style="max-height: 200px; max-width: 100%;">
+                                {% else %}
+                                    <i class="bi bi-headset display-1 text-muted"></i>
+                                {% endif %}
+                            </div>
+                        </a>
+
+                        <div class="card-body px-0">
+                            <h5 class="card-title mb-1">{{ acc.nombre }}</h5>
+                            <p class="text-muted small mb-2">{{ acc.categoria }}</p>
+                            <h5 class="fw-bold text-dark">${{ acc.precio }}</h5>
+
+                            <div class="d-flex flex-column gap-2 mt-3">
+                                {% if not user.is_staff %}
+                                    {% if acc.stock > 0 %}
+                                        <a href="{% url 'agregar_carrito' 'accesorio' acc.ID_accesorio %}" class="xbox-link">
+                                            AGREGAR AL CARRO <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    {% else %}
+                                        <span class="text-danger small fw-bold">AGOTADO</span>
+                                    {% endif %}
+                                {% endif %}
+                                <a href="{% url 'detalle_accesorio' acc.ID_accesorio %}" class="small text-decoration-none text-muted">Ver detalles</a>
+                                
+                                {% if user.is_staff %}
+                                <div class="mt-2 border-top pt-2">
+                                    <a href="{% url 'editar_accesorio' acc.ID_accesorio %}" class="text-secondary small me-2">Editar</a>
+                                    <a href="{% url 'eliminar_accesorio' acc.ID_accesorio %}" class="text-danger small">Borrar</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <h3>No hay accesorios.</h3>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

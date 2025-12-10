@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Carro de compras - Microsoft Store{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="min-height: 70vh;">
+    
+    <div class="row">
+        <!-- COLUMNA IZQUIERDA: LISTA DE PRODUCTOS -->
+        <div class="col-lg-8">
+            <h1 class="fw-bold mb-4">Carro de compras</h1>
+
+            {% if pedido and items %}
+                <!-- Loop de Items -->
+                <div class="d-flex flex-column gap-4">
+                    {% for item in items %}
+                    <div class="d-flex align-items-start border-bottom pb-4">
+                        
+                        <!-- Imagen Grande -->
+                        <div class="me-4" style="width: 120px; height: 120px; flex-shrink: 0; background-color: #f7f7f7; display: flex; align-items: center; justify-content: center;">
+                            {% if item.producto.imagen %}
+                                <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                            {% else %}
+                                <i class="bi bi-image text-muted fs-2"></i>
+                            {% endif %}
+                        </div>
+
+                        <!-- Detalles -->
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="fw-bold mb-1">{{ item.producto.nombre }}</h4>
+                                    <p class="text-muted small mb-2 text-uppercase">{{ item.content_type.model }}</p>
+                                    
+                                    {% if item.producto.stock > 0 %}
+                                        <span class="text-success small fw-bold"><i class="bi bi-check2"></i> En stock</span>
+                                    {% else %}
+                                        <span class="text-danger small fw-bold">Agotado</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <h4 class="fw-bold text-dark mb-0">${{ item.subtotal }}</h4>
+                                    {% if item.cantidad > 1 %}
+                                        <small class="text-muted">(${{ item.precio_unitario }} c/u)</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Controles de Cantidad y Eliminar -->
+                            <div class="d-flex align-items-center mt-3 gap-3">
+                                <div class="input-group input-group-sm" style="width: 110px;">
+                                    <a href="{% url 'sumar_restar_item' item.id 'restar' %}" class="btn btn-outline-secondary">-</a>
+                                    <span class="input-group-text bg-white border-secondary px-3">{{ item.cantidad }}</span>
+                                    <a href="{% url 'sumar_restar_item' item.id 'sumar' %}" class="btn btn-outline-secondary">+</a>
+                                </div>
+                                
+                                <div class="vr mx-2"></div>
+                                
+                                <a href="{% url 'eliminar_item_carrito' item.id %}" class="text-decoration-none text-primary fw-bold small">
+                                    Eliminar
+                                </a>
+                                <a href="#" class="text-decoration-none text-primary fw-bold small">
+                                    Guardar para más tarde
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Carrito Vacío Estilo Microsoft -->
+                <div class="text-center py-5">
+                    <img src="https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE4oB6r?ver=0c3f" alt="Empty Cart" width="150" class="mb-4">
+                    <h3 class="fw-bold">Tu carro está vacío</h3>
+                    <p class="text-muted mb-4">Busca juegos, consolas y accesorios para agregar.</p>
+                    <a href="{% url 'inicio' %}" class="btn btn-xbox-primary px-4 fw-bold">Seguir comprando</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- COLUMNA DERECHA: RESUMEN (Sticky) -->
+        {% if pedido and items %}
+        <div class="col-lg-4 mt-5 mt-lg-0">
+            <div class="bg-light p-4 rounded-0 position-sticky" style="top: 100px;">
+                <h4 class="fw-bold mb-4">Resumen del pedido</h4>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Artículos ({{ items.count }})</span>
+                    <span>${{ pedido.total }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Envío estimado</span>
+                    <span class="text-success fw-bold">Gratis</span>
+                </div>
+                
+                <hr class="my-3">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold">Total</h3>
+                    <h3 class="fw-bold text-dark">${{ pedido.total }}</h3>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'checkout' %}" class="btn btn-xbox-primary btn-lg fw-bold shadow-sm">
+                        Pagar ahora <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <div class="text-center mt-2">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" height="20" class="mx-1 opacity-50">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" height="20" class="mx-1 opacity-50">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" height="20" class="mx-1 opacity-50">
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

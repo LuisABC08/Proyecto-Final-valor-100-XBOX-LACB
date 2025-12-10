@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xbox | {% block title %}Sitio oficial{% endblock %}</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- NUESTRO CSS PERSONALIZADO -->
+    <link href="{% static 'css/xbox_style.css' %}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- NAVBAR ESTILO MICROSOFT (Fondo Blanco) -->
+    <nav class="navbar navbar-expand-lg navbar-xbox sticky-top">
+        <div class="container-fluid px-4">
+            
+            <!-- LOGOS (Microsoft | Xbox) - SE MANTIENEN IGUAL -->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+                <img src="https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31" alt="Microsoft" height="23">
+                <span class="mx-3 text-secondary">|</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg" alt="Xbox" height="23">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'lista_videojuegos' %}">Juegos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'lista_consolas' %}">Consolas</a></li>
+                    <!-- CORREGIDO: Se eliminaron los caracteres raros '-*' -->
+                    <li class="nav-item"><a class="nav-link" href="{% url 'lista_accesorios' %}">Accesorios</a></li>
+                    
+                    <!-- Enlace directo al Panel de Django (Opcional) -->
+                    {% if user.is_staff %}
+                    <li class="nav-item"><a class="nav-link text-danger fw-bold" href="/admin">Panel Admin</a></li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav align-items-center">
+                    
+                    <!-- CARRITO (Solo visible si NO eres admin) -->
+                    {% if not user.is_staff %}
+                        <li class="nav-item mx-2">
+                            <a class="nav-link" href="{% url 'ver_carrito' %}">
+                                Carro <i class="bi bi-cart3"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    <!-- MENÚ DE USUARIO -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle h5"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                
+                                <!-- SECCIÓN ADMIN (NUEVO) -->
+                                {% if user.is_staff %}
+                                    <li><h6 class="dropdown-header text-uppercase text-xbox small fw-bold">Administración</h6></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'admin_lista_pedidos' %}">
+                                            <i class="bi bi-receipt me-2"></i> Ver todos los pedidos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'admin_lista_clientes' %}">
+                                            <i class="bi bi-people me-2"></i> Ver clientes
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                <!-- FIN SECCIÓN ADMIN -->
+                                 {% if not user.is_staff %}
+                                     <li>
+                                        <a class="dropdown-item" href="{% url 'mis_pedidos' %}">
+                                            <i class="bi bi-box-seam me-2"></i> Mis Pedidos
+                                        </a>
+                                     </li>
+                                 {% endif %}
+
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{% url 'logout' %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item text-danger">Cerrar sesión</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Iniciar sesión <i class="bi bi-person-circle"></i></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" style="background-color: #dff6dd; color: #107C10;">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+    <!-- FOOTER SIMPLE -->
+    <footer class="bg-light py-5 mt-5">
+        <div class="container text-muted small">
+            <div class="row">
+                <div class="col-md-2">
+                    <h6 class="fw-bold text-dark">Colecciones</h6>
+                    <p>Xbox Series X</p>
+                    <p>Xbox Game Pass</p>
+                    <p>Juegos de Xbox</p>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="fw-bold text-dark">Soporte</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none text-muted">Cuenta y Perfil</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Descargas</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-8 text-end">
+                    <p class="mb-1">Proyecto Meza - Construye Aplicaciones Web</p>
+                    <p>Alumno: <strong>Luis Alberto Cazares Banda 5-i</strong></p>
+                </div>
+            </div>
+            <div class="mt-4 d-flex justify-content-between align-items-center">
+                <span>Español (México)</span>
+                <span>&copy; Microsoft 2024 (Simulación Educativa)</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

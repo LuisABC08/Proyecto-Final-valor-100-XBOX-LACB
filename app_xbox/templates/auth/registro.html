@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear cuenta{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height: 85vh; background-color: #f2f2f2;">
+    
+    <div class="bg-white p-5 shadow-sm" style="max-width: 480px; width: 100%; border: 1px solid #e1e1e1;">
+        
+        <!-- Logo Microsoft -->
+        <div class="mb-3">
+            <img src="https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31" alt="Microsoft" height="24">
+        </div>
+
+        <h3 class="fw-bold mb-2">Crear cuenta</h3>
+        <p class="text-muted small mb-4">Únete a Xbox y obtén acceso a juegos, consolas y más.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="mb-3">
+                <!-- Etiqueta oculta visualmente pero útil, placeholder hace el trabajo -->
+                {% if field.name != 'username' and field.name != 'email' %}
+                    <label class="form-label small fw-bold text-secondary">{{ field.label }}</label>
+                {% endif %}
+                
+                {{ field }}
+                
+                {% if field.help_text %}
+                    <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">{{ field.help_text }}</small>
+                {% endif %}
+                
+                {% for error in field.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <div class="mt-4 d-grid">
+                <button type="submit" class="btn btn-xbox-primary py-2 fw-bold shadow-sm">
+                    Crear cuenta
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-4 text-center">
+            <p class="small text-muted">¿Ya tiene una cuenta? <a href="{% url 'login' %}" class="text-primary fw-bold text-decoration-none">Inicie sesión</a>.</p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Script para estilizar los campos automáticos de Django -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var inputs = document.querySelectorAll('input');
+        inputs.forEach(function(input) {
+            input.classList.add('form-control', 'rounded-0', 'border-secondary');
+            
+            // Personalizar placeholders según el campo
+            if (input.name === 'username') input.placeholder = 'Nombre de usuario (Gamertag)';
+            if (input.name === 'email') input.placeholder = 'alguien@example.com';
+            if (input.type === 'password') input.placeholder = 'Contraseña';
+        });
+    });
+</script>
+{% endblock %}

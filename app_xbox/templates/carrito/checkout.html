@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - Microsoft Store{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="background-color: #f2f2f2; min-height: 90vh;">
+    <div class="row g-5 justify-content-center">
+        
+        <!-- RESUMEN LATERAL -->
+        <div class="col-md-5 col-lg-4 order-md-last">
+            <div class="bg-white p-4 shadow-sm border sticky-top" style="top: 20px;">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-secondary fw-bold">Resumen</span>
+                    <span class="badge bg-xbox rounded-pill">{{ pedido.items.count }}</span>
+                </h4>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Total (MXN)</span>
+                        <strong>${{ pedido.total }}</strong>
+                    </li>
+                </ul>
+                <div class="alert alert-light border small">
+                    <i class="bi bi-info-circle"></i> Los datos se guardarán en tu cuenta para futuras compras.
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMULARIO -->
+        <div class="col-md-7 col-lg-8">
+            <h2 class="fw-bold mb-4">Finalizar compra</h2>
+            
+            <form method="POST" class="needs-validation" novalidate id="payment-form">
+                {% csrf_token %}
+
+                <!-- SECCIÓN 1: DIRECCIÓN -->
+                <div class="bg-white p-4 shadow-sm border mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0 fw-bold">1. Dirección de envío</h4>
+                        
+                        <!-- SELECTOR DE DIRECCIONES GUARDADAS -->
+                        {% if mis_direcciones %}
+                        <select class="form-select form-select-sm w-auto bg-light border-success" id="select-direccion">
+                            <option value="">-- Usar guardada --</option>
+                            {% for dir in mis_direcciones %}
+                                <option value="{{ dir.id }}" 
+                                    data-nombre="{{ dir.nombre_completo }}"
+                                    data-calle="{{ dir.calle }}"
+                                    data-ciudad="{{ dir.ciudad }}"
+                                    data-cp="{{ dir.codigo_postal }}">
+                                    {{ dir.calle }} ({{ dir.ciudad }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% endif %}
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Nombre completo</label>
+                            <input type="text" class="form-control" name="nombre_completo" id="input-nombre" required 
+                                   value="{{ user.first_name }} {{ user.last_name }}">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Dirección</label>
+                            <input type="text" class="form-control" name="direccion" id="input-calle" placeholder="Calle y número" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Ciudad</label>
+                            <input type="text" class="form-control" name="ciudad" id="input-ciudad" placeholder="Ciudad" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">C.P.</label>
+                            <input type="text" class="form-control" name="codigo_postal" id="input-cp" placeholder="00000" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: PAGO -->
+                <div class="bg-white p-4 shadow-sm border">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0 fw-bold">2. Método de pago</h4>
+                        
+                        <!-- SELECTOR DE TARJETAS GUARDADAS -->
+                        {% if mis_tarjetas %}
+                        <select class="form-select form-select-sm w-auto bg-light border-success" id="select-tarjeta">
+                            <option value="">-- Usar tarjeta guardada --</option>
+                            {% for t in mis_tarjetas %}
+                                <option value="{{ t.id }}" 
+                                    data-nombre="{{ t.nombre_titular }}"
+                                    data-numero="{{ t.numero_tarjeta }}"
+                                    data-exp="{{ t.expiracion }}"
+                                    data-cvv="{{ t.cvv }}">
+                                    Tarjeta terminada en {{ t.numero_tarjeta|slice:"-4:" }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row gy-3 mt-2 p-3 bg-light rounded border">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Nombre en tarjeta</label>
+                            <input type="text" class="form-control" name="card_name" id="card-name" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Número</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-credit-card"></i></span>
+                                <input type="text" class="form-control" name="card_number" id="card-number" maxlength="16" placeholder="0000 0000 0000 0000" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Exp (MM/YY)</label>
+                            <input type="text" class="form-control text-center" name="card_exp" id="card-exp" maxlength="5" placeholder="MM/YY" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">CVV</label>
+                            <input type="text" class="form-control text-center" name="card_cvv" id="card-cvv" maxlength="4" placeholder="123" required>
+                        </div>
+                    </div>
+
+                    <!-- Opción de Guardar -->
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" name="guardar_datos" id="saveCheck" checked>
+                        <label class="form-check-label small" for="saveCheck">
+                            Guardar esta información para futuras compras
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <button class="w-100 btn btn-xbox-primary btn-lg shadow-sm" type="submit">Pagar ${{ pedido.total }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT DE AUTO-RELLENADO -->
+<script>
+    // 1. Rellenar Dirección
+    const selectDir = document.getElementById('select-direccion');
+    if (selectDir) {
+        selectDir.addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            if (selected.value) {
+                document.getElementById('input-nombre').value = selected.dataset.nombre;
+                document.getElementById('input-calle').value = selected.dataset.calle;
+                document.getElementById('input-ciudad').value = selected.dataset.ciudad;
+                document.getElementById('input-cp').value = selected.dataset.cp;
+            } else {
+                // Limpiar si selecciona la opción por defecto
+                document.getElementById('input-calle').value = '';
+                document.getElementById('input-ciudad').value = '';
+                document.getElementById('input-cp').value = '';
+            }
+        });
+    }
+
+    // 2. Rellenar Tarjeta
+    const selectCard = document.getElementById('select-tarjeta');
+    if (selectCard) {
+        selectCard.addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            if (selected.value) {
+                document.getElementById('card-name').value = selected.dataset.nombre;
+                document.getElementById('card-number').value = selected.dataset.numero;
+                document.getElementById('card-exp').value = selected.dataset.exp;
+                document.getElementById('card-cvv').value = selected.dataset.cvv;
+            } else {
+                document.getElementById('card-name').value = '';
+                document.getElementById('card-number').value = '';
+                document.getElementById('card-exp').value = '';
+                document.getElementById('card-cvv').value = '';
+            }
+        });
+    }
+</script>
+{% endblock %}

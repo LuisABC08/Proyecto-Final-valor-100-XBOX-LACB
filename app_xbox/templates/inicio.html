@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %} <!-- ESTA LÍNEA ES OBLIGATORIA PARA USAR TU IMAGEN -->
+
+{% block content %}
+<!-- Forzamos fondo negro solo aquí -->
+<style>
+    body { background-color: #000; color: white; }
+    .navbar-xbox { border-bottom: none; } /* Quitar borde en home */
+</style>
+
+<!-- HERO PRINCIPAL -->
+<div class="position-relative">
+    
+    <!-- AQUÍ ESTÁ EL CAMBIO: Cargamos tu imagen local -->
+    <img src="{% static 'images/banner_inicio.jpg' %}" class="w-100" style="height: 80vh; object-fit: cover; opacity: 0.7;" alt="Banner Principal">
+    
+    <div class="hero-overlay"></div> <!-- Sombra negra -->
+    
+    <div class="container position-absolute top-50 start-0 translate-middle-y text-white">
+        <div class="row">
+            <div class="col-md-6 px-5">
+                <span class="badge bg-warning text-dark mb-2">JUEGA CON GAME PASS</span>
+                <h1 class="display-3 fw-bold">Call of Duty®: Black Ops 7</h1>
+                <p class="fs-5">El mejor Black Ops que jamás haya existido. Cómpralo ahora o juégalo con PC Game Pass o Ultimate.</p>
+                
+                <div class="mt-4">
+                    <!-- Botón redireccionado al detalle del primer juego de la lista -->
+                    {% if juegos %}
+                        <a href="{% url 'detalle_videojuego' juegos.0.ID_videojuego %}" class="btn btn-xbox-primary me-3">CONSÍGUELO AHORA</a>
+                    {% else %}
+                        <a href="#" class="btn btn-xbox-primary me-3">CONSÍGUELO AHORA</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ICONOS DE NAVEGACIÓN -->
+<div class="container py-5">
+    <div class="row text-center justify-content-center g-4">
+        <div class="col-6 col-md-2">
+            <a href="{% url 'lista_videojuegos' %}" class="text-decoration-none text-white">
+                <i class="bi bi-controller text-xbox display-4"></i>
+                <h6 class="mt-2 fw-bold">JUEGOS</h6>
+            </a>
+        </div>
+        <div class="col-6 col-md-2">
+            <a href="{% url 'lista_consolas' %}" class="text-decoration-none text-white">
+                <i class="bi bi-display text-xbox display-4"></i>
+                <h6 class="mt-2 fw-bold">CONSOLAS</h6>
+            </a>
+        </div>
+        <div class="col-6 col-md-2">
+            <a href="{% url 'lista_accesorios' %}" class="text-decoration-none text-white">
+                <i class="bi bi-headset text-xbox display-4"></i>
+                <h6 class="mt-2 fw-bold">ACCESORIOS</h6>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- NUEVOS LANZAMIENTOS -->
+<div class="container mb-5">
+    <h3 class="fw-bold mb-4">Nuevos lanzamientos</h3>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+        <!-- Loop de juegos reales -->
+        {% for juego in juegos %}
+        <div class="col">
+            <div class="card bg-transparent border-0">
+                <a href="{% url 'detalle_videojuego' juego.ID_videojuego %}">
+                    <img src="{% if juego.imagen %}{{ juego.imagen.url }}{% endif %}" class="card-img-top rounded-0" alt="{{ juego.nombre }}">
+                </a>
+                <div class="card-body px-0">
+                    <h5 class="card-title text-white fs-6 mb-0">{{ juego.nombre }}</h5>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-end mt-3">
+        <a href="{% url 'lista_videojuegos' %}" class="text-xbox fw-bold text-decoration-none">EXPLORAR TODO ></a>
+    </div>
+</div>
+
+{% endblock %}

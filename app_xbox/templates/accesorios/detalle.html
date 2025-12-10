@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ accesorio.nombre }} | Accesorios{% endblock %}
+
+{% block content %}
+
+<div class="bg-light py-5">
+    <div class="container">
+        
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'lista_accesorios' %}" class="text-decoration-none text-muted small">ACCESORIOS</a></li>
+                <li class="breadcrumb-item active small fw-bold" aria-current="page">{{ accesorio.nombre|upper }}</li>
+            </ol>
+        </nav>
+
+        <div class="row align-items-center gx-5">
+            <div class="col-md-6 text-center mb-4 mb-md-0">
+                <div class="p-5 bg-white shadow-sm rounded-3">
+                    {% if accesorio.imagen %}
+                        <img src="{{ accesorio.imagen.url }}" class="img-fluid" style="max-height: 400px;">
+                    {% else %}
+                        <div class="text-muted">Sin imagen</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="text-xbox fw-bold text-uppercase mb-2">{{ accesorio.categoria }}</h6>
+                <h1 class="display-4 fw-bold mb-3">{{ accesorio.nombre }}</h1>
+                
+                <div class="mb-4 border-bottom pb-4">
+                    <h2 class="display-6 fw-bold text-dark">MXN${{ accesorio.precio }}</h2>
+                </div>
+
+                <div class="mb-4">
+                    {% if accesorio.stock > 0 %}
+                        <div class="d-flex align-items-center text-success">
+                            <i class="bi bi-check-circle-fill fs-5 me-2"></i>
+                            <span class="fw-bold">Disponible ({{ accesorio.stock }})</span>
+                        </div>
+                    {% else %}
+                        <span class="text-danger fw-bold">Agotado</span>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid gap-2 d-md-block">
+                    {% if not user.is_staff %}
+                        {% if accesorio.stock > 0 %}
+                        <!-- Tipo 'accesorio' -->
+                            <a href="{% url 'agregar_carrito' 'accesorio' accesorio.ID_accesorio %}" class="btn btn-xbox-primary btn-lg px-5 shadow-sm">
+                                AGREGAR AL CARRO
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary btn-lg px-5" disabled>SIN STOCK</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                {% if user.is_staff %}
+                <div class="mt-4 pt-3 border-top">
+                    <a href="{% url 'editar_accesorio' accesorio.ID_accesorio %}" class="btn btn-sm btn-outline-dark me-2">Editar</a>
+                    <a href="{% url 'eliminar_accesorio' accesorio.ID_accesorio %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Specs Icons -->
+<div class="container py-5 my-4">
+    <div class="row row-cols-2 row-cols-md-4 g-4 text-center">
+        <div class="col">
+            <div class="p-4 h-100 border rounded-3 bg-white">
+                <i class="bi bi-check2-square display-4 text-secondary mb-3"></i>
+                <h5 class="fw-bold">Compatibilidad</h5>
+                <p class="text-muted">{{ accesorio.compatibilidad }}</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-4 h-100 border rounded-3 bg-white">
+                <i class="bi bi-palette display-4 text-secondary mb-3"></i>
+                <h5 class="fw-bold">Color</h5>
+                <p class="text-muted">{{ accesorio.color }}</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-4 h-100 border rounded-3 bg-white">
+                <i class="bi bi-tag display-4 text-secondary mb-3"></i>
+                <h5 class="fw-bold">Marca</h5>
+                <p class="text-muted">{{ accesorio.proveedor }}</p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-4 h-100 border rounded-3 bg-white">
+                <i class="bi bi-box-seam display-4 text-secondary mb-3"></i>
+                <h5 class="fw-bold">Envío</h5>
+                <p class="text-muted">Gratis</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

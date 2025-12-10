@@ -1,0 +1,56 @@
+/* xbox_style.css */
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+
+body {
+    font-family: 'Segoe UI', sans-serif; /* Tipografía oficial de Microsoft/Xbox */
+}
+
+/* --- COLORES XBOX --- */
+.text-xbox { color: #107C10 !important; }
+.bg-xbox { background-color: #107C10 !important; }
+.btn-xbox-primary {
+    background-color: #9bf00b; /* El verde brillante de los botones nuevos */
+    color: #054b16;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+    padding: 10px 20px;
+}
+.btn-xbox-primary:hover { background-color: #acff1a; color: #000; }
+
+/* --- LINKS ESTILO XBOX (Captura 3) --- */
+.xbox-link {
+    color: #107C10;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+}
+.xbox-link:hover { text-decoration: underline; color: #0b5c0b; }
+.xbox-link i { margin-left: 5px; font-size: 0.8rem; }
+
+/* --- NAVBAR MICROSOFT --- */
+.navbar-xbox {
+    background-color: white;
+    border-bottom: 1px solid #e1e1e1;
+    padding: 0.8rem 1rem;
+}
+.nav-link { color: #2e2e2e !important; font-size: 0.9rem; }
+.nav-link:hover { text-decoration: underline; }
+
+/* --- HERO SECTION --- */
+.hero-overlay {
+    background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%);
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+}
+
+/* --- CARDS LIMPIAS (Captura 3) --- */
+.card-clean {
+    border: none;
+    background: transparent;
+    transition: transform 0.2s;
+}
+.card-clean:hover { transform: translateY(-5px); }
+.card-title { font-weight: 600; font-size: 1.1rem; }

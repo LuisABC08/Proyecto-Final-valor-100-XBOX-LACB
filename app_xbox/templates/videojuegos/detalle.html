@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ juego.nombre }} | Xbox{% endblock %}
+
+{% block content %}
+
+<!-- FONDO AMBIENTAL (Efecto Blur detrás) -->
+<div style="position: relative; overflow: hidden; min-height: 80vh;">
+    
+    <!-- Imagen de fondo borrosa -->
+    {% if juego.imagen %}
+    <div style="
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background-image: url('{{ juego.imagen.url }}');
+        background-size: cover;
+        background-position: center;
+        filter: blur(60px) brightness(0.4);
+        z-index: -1;">
+    </div>
+    {% else %}
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #111; z-index: -1;"></div>
+    {% endif %}
+
+    <div class="container py-5">
+        <!-- Migas de pan (Breadcrumbs) -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'inicio' %}" class="text-white text-decoration-none small">INICIO</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'lista_videojuegos' %}" class="text-white text-decoration-none small">JUEGOS</a></li>
+                <li class="breadcrumb-item active text-white-50 small" aria-current="page">{{ juego.nombre|upper }}</li>
+            </ol>
+        </nav>
+
+        <div class="row gx-5">
+            
+            <!-- COLUMNA IZQUIERDA: PORTADA -->
+            <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-lg" style="border-radius: 4px; overflow: hidden;">
+                    {% if juego.imagen %}
+                        <img src="{{ juego.imagen.url }}" class="img-fluid w-100" alt="{{ juego.nombre }}">
+                    {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 400px;">Sin Portada</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: INFO -->
+            <div class="col-md-8 text-white">
+                <h1 class="display-3 fw-bold mb-1">{{ juego.nombre }}</h1>
+                <p class="fs-5 text-white-50 mb-4">{{ juego.desarrollador }} • {{ juego.genero }}</p>
+
+                <!-- Precios y Stock -->
+                <div class="mb-4">
+                    {% if juego.stock > 0 %}
+                        <h2 class="fw-bold mb-0">MXN${{ juego.precio }}</h2>
+                        <small class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Disponible ahora</small>
+                    {% else %}
+                        <h2 class="fw-bold text-muted mb-0">MXN${{ juego.precio }}</h2>
+                        <small class="text-danger fw-bold"><i class="bi bi-x-circle-fill"></i> Agotado temporalmente</small>
+                    {% endif %}
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex flex-wrap gap-3 mb-5">
+                    {% if not user.is_staff %}
+                        {% if juego.stock > 0 %}
+                            <a href="{% url 'agregar_carrito' 'videojuego' juego.ID_videojuego %}" class="btn btn-xbox-primary px-5 py-3 fs-5">
+                                COMPRAR AHORA
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary px-5 py-3 fs-5" disabled>NO DISPONIBLE</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- Descripción Ficticia -->
+                <div class="bg-dark bg-opacity-50 p-4 rounded-3 mb-4">
+                    <h5 class="fw-bold border-bottom border-secondary pb-2 mb-3">Descripción</h5>
+                    <p>Experimenta la próxima generación de inmersión con {{ juego.nombre }}. Disfruta de gráficos impresionantes, una jugabilidad fluida y una historia que te atrapará desde el primer momento. Optimizado para Xbox Series X|S.</p>
+                    <div class="row mt-4 text-white-50 small">
+                        <div class="col-6 col-md-3"><strong>Publicado por:</strong><br>{{ juego.proveedor }}</div>
+                        <div class="col-6 col-md-3"><strong>Fecha lanzamiento:</strong><br>{{ juego.fecha_lanzamiento }}</div>
+                        <div class="col-6 col-md-3"><strong>Tamaño aprox:</strong><br>50 GB</div>
+                        <div class="col-6 col-md-3"><strong>Clasificación:</strong><br>Para todos</div>
+                    </div>
+                </div>
+
+                <!-- Controles Admin -->
+                {% if user.is_staff %}
+                <div class="mt-5 border-top border-secondary pt-3">
+                    <p class="small text-muted mb-2">HERRAMIENTAS DE ADMINISTRADOR</p>
+                    <a href="{% url 'editar_videojuego' juego.ID_videojuego %}" class="btn btn-sm btn-light me-2">Editar Juego</a>
+                    <a href="{% url 'eliminar_videojuego' juego.ID_videojuego %}" class="btn btn-sm btn-danger">Eliminar Juego</a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
